@@ -23,6 +23,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useEffect } from "react";
+import { DestinyService } from "@/services/DestinyService";
 
 // This is sample data.
 const data = {
@@ -155,6 +157,26 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [user, setUser] = React.useState<any>({
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  });
+
+  const getManifestr = async () => {
+    const res = await DestinyService.getProfileInfo(254, 8200690);
+    console.log(res);
+    setUser({
+      ...user,
+      name:
+        res.Response.bnetMembership.displayName +
+        "#" +
+        res.Response.bnetMembership.bungieGlobalDisplayNameCode,
+    });
+  };
+  useEffect(() => {
+    getManifestr();
+  }, []);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -165,7 +187,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
